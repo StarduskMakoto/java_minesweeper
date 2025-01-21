@@ -7,7 +7,9 @@ package com.stardusk.minesweeper;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionListener;
+import java.net.URL;
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -85,7 +87,10 @@ public class GUI {
         gridpanel.setLayout(new GridLayout(5, 5));
         
         for (int i = 0; i < 25; i++){
-            buttons[i] = new JButton(Integer.toString(i + 1));
+            //buttons[i] = new JButton(Integer.toString(i + 1));
+            URL url = getClass().getClassLoader().getResource("Minesweeper_slot.png");
+            buttons[i] = new JButton(new ImageIcon(url));
+            //Integer.toString(new ImageIcon("assets/Minesweeper_slot.png").getIconHeight())
             gridpanel.add(buttons[i]);
         }
         rootpanel.add(gridpanel, BorderLayout.CENTER);
