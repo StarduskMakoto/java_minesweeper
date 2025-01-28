@@ -17,6 +17,8 @@ public class Minesweeper {
         
         GUI gui = new GUI();
         
+        game.setGui(gui);
+        
         gui.setActionManager(game.getActionManager());
         
     }

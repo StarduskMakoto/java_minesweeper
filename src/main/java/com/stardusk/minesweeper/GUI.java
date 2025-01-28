@@ -5,7 +5,9 @@
 package com.stardusk.minesweeper;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.event.ActionListener;
 import java.net.URL;
 import javax.swing.BorderFactory;
@@ -21,9 +23,12 @@ import javax.swing.JPanel;
  */
 public class GUI {
     
+    public static final int MAX_X = 10;
+    public static final int MAX_Y = 10;
+    
     private JFrame frame;
     
-    private JButton[] buttons = new JButton[25];
+    private JButton[][] buttons = new JButton[MAX_Y][MAX_X];
     
     private ActionListener actionManager;
     
@@ -35,19 +40,19 @@ public class GUI {
         frame = newFrame;
     }
     
-    public JButton[] getButtons(){
+    public JButton[][] getButtons(){
         return buttons;
     }
     
-    public void setButtons(JButton newButton, int index) throws Exception{
-        if (index < 0 || index >= buttons.length)
+    public void setButtons(JButton newButton, int id_x, int id_y) throws Exception{
+        if (id_y < 0 || id_y >= buttons.length || id_x < 0 || id_x >= buttons[0].length)
         {
             throw new Exception("INDEX NOT IN RANGE");
         }
-        buttons[index] = newButton;
+        buttons[id_y][id_x] = newButton;
     }
     
-    public void setButtons(JButton[] newButtons) throws Exception{
+    public void setButtons(JButton[][] newButtons) throws Exception{
         if (newButtons.length != buttons.length)
         {
             throw new Exception("ARRAYS NOT SAME SIZE");
@@ -56,10 +61,12 @@ public class GUI {
     }
     
     public void updateButtons(){
-        for (int i = 0; i < buttons.length; i++)
-        {
-            buttons[i].setActionCommand(Integer.toString(i));
-            buttons[i].addActionListener(actionManager);
+        for (int y = 0; y < buttons.length; y++) {
+            for (int x = 0; x < buttons[y].length; x++)
+            {
+                buttons[y][x].setActionCommand(Integer.toString(y) + "-" + Integer.toString(x));
+                buttons[y][x].addActionListener(actionManager);
+            }
         }
     }
     
@@ -75,6 +82,8 @@ public class GUI {
     public GUI() {
         frame = new JFrame("Frame Test");
         
+        frame.setMinimumSize(new Dimension(480, 480));
+        
         JPanel rootpanel = new JPanel();
         rootpanel.setBorder(BorderFactory.createEmptyBorder(30, 30, 10, 30));
         rootpanel.setLayout(new BorderLayout());
@@ -84,22 +93,55 @@ public class GUI {
         rootpanel.add(label, BorderLayout.PAGE_START);
         
         JPanel gridpanel = new JPanel();
-        gridpanel.setLayout(new GridLayout(5, 5));
+        gridpanel.setLayout(new GridLayout(MAX_Y, MAX_X));
+        gridpanel.setMinimumSize(new Dimension(40 * MAX_Y, 40 * MAX_X));
         
-        for (int i = 0; i < 25; i++){
-            //buttons[i] = new JButton(Integer.toString(i + 1));
-            URL url = getClass().getClassLoader().getResource("Minesweeper_slot.png");
-            buttons[i] = new JButton(new ImageIcon(url));
-            //Integer.toString(new ImageIcon("assets/Minesweeper_slot.png").getIconHeight())
-            gridpanel.add(buttons[i]);
+        for (JButton[] button : buttons) {
+            for (int x = 0; x < button.length; x++) {
+                URL url = getClass().getClassLoader().getResource("Minesweeper_slot.png");
+                ImageIcon icon = new ImageIcon(url);
+                Image n_img = icon.getImage();
+                n_img = n_img.getScaledInstance(40, 40, Image.SCALE_FAST);
+                icon.setImage(n_img);
+                button[x] = new JButton(icon);
+                button[x].setOpaque(false);
+                button[x].setContentAreaFilled(false);
+                button[x].setBorderPainted(false);
+                //Integer.toString(new ImageIcon("assets/Minesweeper_slot.png").getIconHeight())
+                gridpanel.add(button[x]);
+            }
         }
         rootpanel.add(gridpanel, BorderLayout.CENTER);
         
         frame.add(rootpanel, BorderLayout.CENTER);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
+        
+        frame.setSize(480, 480);
+        
         frame.setVisible(true);
     }
     
+    private static final String[] sprites = {
+        "Empty_slot.png",
+        "num1.png",
+        "num2.png",
+        "num3.png",
+        "num4.png",
+        "num5.png",
+        "num6.png",
+        "num7.png",
+        "num8.png",
+        "num9.png",
+        "mine.png"
+    };
     
+    public void revealButton(int id_x, int id_y, int val){
+        URL url = getClass().getClassLoader().getResource(sprites[val]);
+        ImageIcon icon = new ImageIcon(url);
+        Image n_img = icon.getImage();
+        n_img = n_img.getScaledInstance(40, 40, Image.SCALE_FAST);
+        icon.setImage(n_img);
+        buttons[id_y][id_x].setIcon(icon);
+    }
 }
